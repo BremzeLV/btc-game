@@ -32,7 +32,7 @@ export class AuthService {
         
         // @ts-ignore -- complains about checking the value before assignment
         if (!user) {
-        user = await this.userService.createAnonymousUser();
+            user = await this.userService.createAnonymousUser();
         }
 
         return {

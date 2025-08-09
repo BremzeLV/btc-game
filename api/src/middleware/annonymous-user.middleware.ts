@@ -13,7 +13,7 @@ export class AnonymousUserMiddleware implements NestMiddleware {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 24,
     });
