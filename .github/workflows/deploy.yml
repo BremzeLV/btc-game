@@ -23,8 +23,9 @@ jobs:
           cd api
           npm install
           npm run build
-          pm2 describe nestjs-app || pm2 start dist/main.js --name nestjs-app
-          pm2 restart nestjs-app
+          npm run migration:run
+          pm2 describe api || pm2 start dist/main.js --name api
+          pm2 restart api
 
           # Client
           cd ../client

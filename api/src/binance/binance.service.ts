@@ -25,7 +25,7 @@ export class BinanceService implements OnModuleInit, OnModuleDestroy {
 
   private ws: WebSocket;
   private reconnectDelay = 5000;
-  private priceUpdateThrottling = 0;
+  private priceUpdateThrottling = 5000;
 
   constructor(
     private readonly priceService: PriceService,
