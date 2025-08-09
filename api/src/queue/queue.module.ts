@@ -10,6 +10,7 @@ import { WebsocketsModule } from 'src/websockets/websockets.module';
   imports: [
     BullModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
+        prefix: 'bull:{btcGame}',
         connection: {
           host: configService.get('REDIS_HOST'),
           port: configService.get('REDIS_PORT'),
