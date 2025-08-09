@@ -84,7 +84,7 @@ export const GameContainer = ({ marketPair }: GameContainerProps) => {
 			<div className="max-w-2xl mx-auto space-y-6">
 				<div className="text-center pt-6">
 					<h1 className="text-4xl font-bold bg-gradient-bitcoin bg-clip-text text-transparent mb-2">
-						Bitcoin Price Predictor 2
+						Bitcoin Price Predictor
 					</h1>
 					<p className="text-muted-foreground">
 						Predict if Bitcoin will go up or down.
