@@ -13,7 +13,6 @@ import { WebsocketsModule } from 'src/websockets/websockets.module';
         connection: {
           host: configService.get('REDIS_HOST'),
           port: configService.get('REDIS_PORT'),
-          tls: {},
         },
       }),
       inject: [ConfigService],
