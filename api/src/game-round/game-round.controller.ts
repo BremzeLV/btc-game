@@ -18,7 +18,11 @@ export class GameRoundController {
     @RequestUser() user: User,
   ): Promise<GameRound | null> {
     return this.gameRoundService.findOne({
-      where: { gameId: query.gameId, result: GameRoundResult.WAITING, userId: user.uuid },
+      where: {
+        gameId: query.gameId,
+        result: GameRoundResult.WAITING,
+        userId: user.uuid,
+      },
     });
   }
 

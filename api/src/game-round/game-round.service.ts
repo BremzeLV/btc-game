@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 import { GameRound, GameRoundPrediction, GameRoundResult } from './types';
 import { GameRoundEntity } from './entities/game-round.entity';
@@ -6,17 +10,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindManyOptions, Repository } from 'typeorm';
 import { GameRoundCreateDto } from './dto/game-round-create.dto';
 import { InjectQueue } from '@nestjs/bullmq';
-import { JobDataName, JobDataType, QueueJobName, QueueName } from 'src/queue/types';
+import {
+  JobDataName,
+  JobDataType,
+  QueueJobName,
+  QueueName,
+} from 'src/queue/types';
 import { Queue } from 'bullmq';
 import { GameService } from 'src/game/game.service';
 import { PriceService } from 'src/price/price.service';
 import Big from 'big.js';
 import { WebsocketsService } from 'src/websockets/websockets.service';
 import { User } from 'src/user/types';
+import { AllConfigType } from 'src/config/types';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GameRoundService {
-  private readonly oneMinuteJobDelay = 6000;
+  private roundLength: number;
 
   constructor(
     @InjectRepository(GameRoundEntity)
@@ -26,18 +37,26 @@ export class GameRoundService {
     private readonly gameService: GameService,
     private readonly priceService: PriceService,
     private readonly websocketsService: WebsocketsService,
-  ) {}
+    private readonly configService: ConfigService<AllConfigType>,
+  ) {
+    this.roundLength = this.configService.getOrThrow(
+      'app.gameRoundLenghtMiliseconds',
+      { infer: true },
+    );
+  }
 
   async create(dto: GameRoundCreateDto, user: User): Promise<GameRound> {
     const roundStartAt = new Date();
-    const roundEndAt = new Date(
-      roundStartAt.getTime() + this.oneMinuteJobDelay,
-    );
+    const roundEndAt = new Date(roundStartAt.getTime() + this.roundLength);
 
     const game = await this.gameService.findOrStartNewGame(dto, user);
 
     const existingGameRound = await this.findOne({
-      where: { gameId: game.id, result: GameRoundResult.WAITING, userId: user.uuid },
+      where: {
+        gameId: game.id,
+        result: GameRoundResult.WAITING,
+        userId: user.uuid,
+      },
     });
 
     if (existingGameRound) {
@@ -57,7 +76,7 @@ export class GameRoundService {
     );
 
     await this.gameQueue.add(QueueJobName.OneMinuteGame, gameRound, {
-      delay: this.oneMinuteJobDelay,
+      delay: this.roundLength,
     });
 
     return gameRound;
@@ -119,7 +138,7 @@ export class GameRoundService {
           gameRound,
           startPrice,
           endPrice,
-        }
+        },
       });
     }
 
@@ -136,7 +155,7 @@ export class GameRoundService {
     const game = await this.gameService.findOne({
       where: { id: gameRound.gameId },
     });
-    
+
     if (!game) {
       throw new NotFoundException(
         `Cannot find the game with id: ${gameRound.gameId}`,

@@ -23,11 +23,13 @@ export class GameController {
     @RequestUser() user: User,
   ): Promise<FindOrStartNewGameResult> {
     const game = await this.gameService.findOrStartNewGame(query, user);
-    const waitingGameRound = await this.gameRoundService.findOne(
-      {
-        where: { gameId: game.id, result: GameRoundResult.WAITING, userId: user.uuid },
+    const waitingGameRound = await this.gameRoundService.findOne({
+      where: {
+        gameId: game.id,
+        result: GameRoundResult.WAITING,
+        userId: user.uuid,
       },
-    );
+    });
 
     return {
       game,
@@ -36,10 +38,7 @@ export class GameController {
   }
 
   @Post('/start')
-  start(
-    @Body() dto: GameCreateDto,
-    @RequestUser() user: User,
-  ): Promise<Game> {
+  start(@Body() dto: GameCreateDto, @RequestUser() user: User): Promise<Game> {
     return this.gameService.startNew(dto, user);
   }
 }

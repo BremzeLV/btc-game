@@ -19,10 +19,7 @@ export class GameService {
     return this.gameRepository.save(this.gameRepository.create(dto));
   }
 
-  async update(
-    id: Game['id'],
-    dto: Partial<Game>,
-  ): Promise<Game | null> {
+  async update(id: Game['id'], dto: Partial<Game>): Promise<Game | null> {
     await this.gameRepository.update(id, dto);
     return this.findOne({ where: { id } });
   }
@@ -61,7 +58,10 @@ export class GameService {
     });
 
     if (!game) {
-      game = await this.create({ marketPair: dto.marketPair, userId: user.uuid });
+      game = await this.create({
+        marketPair: dto.marketPair,
+        userId: user.uuid,
+      });
     }
 
     return game;

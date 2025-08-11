@@ -18,6 +18,8 @@ import {
 } from './types';
 import { WebsocketsService } from 'src/websockets/websockets.service';
 import { throttle } from 'lodash';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from 'src/config/types';
 
 @Injectable()
 export class BinanceService implements OnModuleInit, OnModuleDestroy {
@@ -25,7 +27,6 @@ export class BinanceService implements OnModuleInit, OnModuleDestroy {
 
   private ws: WebSocket;
   private reconnectDelay = 5000;
-  private priceUpdateThrottling = 5000;
 
   constructor(
     private readonly priceService: PriceService,
@@ -33,6 +34,7 @@ export class BinanceService implements OnModuleInit, OnModuleDestroy {
     @Inject(MARKET_PAIR_BINDING_KEY)
     private readonly marketPair: PriceMarketPair,
     private readonly websocketsService: WebsocketsService,
+    private readonly configService: ConfigService<AllConfigType>,
   ) {}
 
   onModuleInit() {
@@ -64,7 +66,7 @@ export class BinanceService implements OnModuleInit, OnModuleDestroy {
   private onMessage() {
     const throttledHandler = throttle(
       async (data: string) => this.handleMessage(data),
-      this.priceUpdateThrottling,
+      this.configService.get('app.priceUpdateThrottle', { infer: true }),
     );
 
     this.ws.on('message', throttledHandler);

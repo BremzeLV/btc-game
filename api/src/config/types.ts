@@ -8,6 +8,10 @@ export type AppConfig = {
   corsOrigin: string;
   jwtSecret: string;
   binanceWsUrl: string;
+  redisHost: string;
+  redisPort: string;
+  gameRoundLenghtMiliseconds: number;
+  priceUpdateThrottle: number;
 };
 
 export type AllConfigType = {

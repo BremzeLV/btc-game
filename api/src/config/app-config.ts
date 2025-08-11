@@ -3,6 +3,7 @@ import validateConfig from '.././utils/validate-config';
 import {
   IsEnum,
   IsInt,
+  IsNumber,
   IsString,
   Max,
   Min,
@@ -38,6 +39,18 @@ class EnvironmentVariablesValidator {
 
   @IsString()
   BINANCE_WS_URL: string;
+
+  @IsString()
+  REDIS_HOST: string;
+
+  @IsString()
+  REDIS_PORT: string;
+
+  @IsNumber()
+  GAME_ROUND_LENGTH_MILISECONDS: number;
+
+  @IsNumber()
+  PRICE_UPDATE_THROTTLE: number;
 }
 
 export default registerAs<AppConfig>('app', () => {
@@ -55,5 +68,11 @@ export default registerAs<AppConfig>('app', () => {
     corsOrigin: process.env.CORS_ORIGIN || '',
     jwtSecret: process.env.JWT_SECRET || '',
     binanceWsUrl: process.env.BINANCE_WS_URL || '',
+    redisHost: process.env.REDIS_HOST || '',
+    redisPort: process.env.REDIS_PORT || '',
+    gameRoundLenghtMiliseconds:
+      Number(process.env.GAME_ROUND_LENGTH_MILISECONDS) || 60000,
+    priceUpdateThrottle: 
+      Number(process.env.PRICE_UPDATE_THROTTLE) || 5000,
   };
 });
