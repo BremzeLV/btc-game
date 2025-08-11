@@ -3,6 +3,7 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
@@ -33,12 +34,15 @@ export class WebsocketsService
     if (rawCookie) {
       const parsedCookie = cookie.parse(rawCookie);
 
-      if (parsedCookie.accessToken) {
-        const data = await this.authService.verifyToken(
-          parsedCookie.accessToken,
-        );
-
-        client.join(`user_${data.uuid}`);
+      try {
+        if (parsedCookie.accessToken) {
+          const data = await this.authService.verifyToken(
+            parsedCookie.accessToken,
+          );
+          client.join(`user_${data.uuid}`);
+        }
+      } catch (e) {
+        new WsException(e);
       }
     }
 

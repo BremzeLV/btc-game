@@ -21,5 +21,5 @@ export const Counter = ({ timer }: CounterProps) => {
 		return () => clearInterval(interval);
 	}, []);
 
-	return <>{Math.ceil(timeRemaining / 1000)}</>;
+	return <>{Math.floor(timeRemaining / 1000)}</>;
 };
