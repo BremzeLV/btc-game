@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -17,6 +18,7 @@ export class GameEntity extends BaseEntity implements Game {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index()
   @Column({
     type: 'uuid',
   })
@@ -28,6 +30,7 @@ export class GameEntity extends BaseEntity implements Game {
   })
   points: number;
 
+  @Index()
   @Column({
     type: 'enum',
     enum: GameStatus,
@@ -35,6 +38,7 @@ export class GameEntity extends BaseEntity implements Game {
   })
   status: GameStatus;
 
+  @Index()
   @Column({
     type: 'enum',
     enum: PriceMarketPair,

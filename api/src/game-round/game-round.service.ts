@@ -112,9 +112,20 @@ export class GameRoundService {
       new Date(gameRound.roundEndAt).getTime() - roundTimeDelta,
     ).toISOString();
 
+     const game = await this.gameService.findOne({
+       where: { id: gameRound.gameId },
+     });
+
+     if (!game) {
+       throw new NotFoundException(
+         `Cannot find the game with id: ${gameRound.gameId}`,
+       );
+     }
+
     const [startPrice, endPrice] = await Promise.all([
       this.priceService.findOne({
         where: {
+          marketPair: game.marketPair,
           priceAt: Between(roundStartAtMinusDelta, gameRound.roundStartAt),
         },
         order: {
@@ -123,6 +134,7 @@ export class GameRoundService {
       }),
       this.priceService.findOne({
         where: {
+          marketPair: game.marketPair,
           priceAt: Between(roundEndAtMinusDelta, gameRound.roundEndAt),
         },
         order: {
@@ -150,16 +162,6 @@ export class GameRoundService {
       case GameRoundPrediction.DOWN:
         isRoundWon = Big(startPrice.price).gt(endPrice.price);
         break;
-    }
-
-    const game = await this.gameService.findOne({
-      where: { id: gameRound.gameId },
-    });
-
-    if (!game) {
-      throw new NotFoundException(
-        `Cannot find the game with id: ${gameRound.gameId}`,
-      );
     }
 
     const [updatedGame, updatedGameRound] = await Promise.all([

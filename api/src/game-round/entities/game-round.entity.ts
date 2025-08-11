@@ -17,11 +17,13 @@ export class GameRoundEntity extends BaseEntity implements GameRound {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index()
   @Column({
     type: 'uuid',
   })
   userId: string;
-  
+
+  @Index()
   @Column({
     type: Number,
   })
@@ -33,6 +35,7 @@ export class GameRoundEntity extends BaseEntity implements GameRound {
   })
   prediction: GameRoundPrediction;
 
+  @Index()
   @Column({
     type: 'enum',
     enum: GameRoundResult,
