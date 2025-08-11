@@ -31,37 +31,37 @@ export const GameContainer = ({ marketPair }: GameContainerProps) => {
 
 	useEffect(() => {
 		fetchPrice(PriceMarketPair.BTCUSD);
-  }, [fetchPrice]);
+  	}, [fetchPrice]);
 
-  useEffect(() => {
+  	useEffect(() => {
 		fetchGame(PriceMarketPair.BTCUSD);
 	}, [fetchGame]);
   
-  useEffect(() => { 
-    if (gameState.lastGameRoundResult !== null) {
-      let title = 'Unknown game round result';
-      const description: string[] = gameState.lastGameRoundPrices
-        ? [
-          `Start price: ${gameState.lastGameRoundPrices.startPrice}$`,
-          `End price: ${gameState.lastGameRoundPrices.endPrice}$`,
-        ]
-        : [];
+	useEffect(() => { 
+		if (gameState.lastGameRoundResult !== null) {
+		let title = 'Unknown game round result';
+		const description: string[] = gameState.lastGameRoundPrices
+			? [
+			`Start price: ${gameState.lastGameRoundPrices.startPrice}$`,
+			`End price: ${gameState.lastGameRoundPrices.endPrice}$`,
+			]
+			: [];
 
-      switch (gameState.lastGameRoundResult) { 
-        case GameRoundResult.WON:
-          title = 'You won!';
-          break;
-        case GameRoundResult.LOST:
-          title = 'You lost! :( House always wins!';
-          break;
-        case GameRoundResult.CANCELLED:
-          title = 'Something went wrong with the round resolution';
-          break;
-      }
-      
-			toast(<ToastMessage title={title} description={description} />);
+		switch (gameState.lastGameRoundResult) { 
+			case GameRoundResult.WON:
+			title = 'You won!';
+			break;
+			case GameRoundResult.LOST:
+			title = 'You lost! :( House always wins!';
+			break;
+			case GameRoundResult.CANCELLED:
+			title = 'Something went wrong with the round resolution';
+			break;
 		}
-  }, [gameState.lastGameRoundPrices, gameState.lastGameRoundResult])
+		
+				toast(<ToastMessage title={title} description={description} />);
+			}
+	}, [gameState.lastGameRoundPrices, gameState.lastGameRoundResult])
 
 	const handleNewGameRound = useCallback(
 		(prediction: GameRoundPrediction) => {

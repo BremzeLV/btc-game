@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:17.5-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - btc-game-database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: api
+    env_file:
+      - ./api/.env
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
+    env_file:
+      - ./api/.env
+
+  api:
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+      - redis
+    command: >
+      sh -c "npm run migration:run && npm run start:prod"
+    env_file:
+      - ./api/.env
+
+  client:
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - api
+    env_file:
+      - ./api/.env
+
+volumes:
+  btc-game-database:

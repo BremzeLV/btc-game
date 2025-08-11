@@ -12,21 +12,25 @@ export const useGame = () => {
 		lastGameRoundPrices: null,
 	});
 	const [isGameStateLoading, setIsGameStateLoading] = useState(true);
-	const { socketRef } = useWebSocket();
+	const { socketRef, reconnect: reconnectWS } = useWebSocket();
 
-	const fetchGame = useCallback((marketPair: PriceMarketPair) => {
-		axiosInstance
-			.get("/game/findOrStartNewGame", { params: { marketPair } })
-			.then(({ data }: FindOrStartNewGameResponse) => {
-				setGameState({
-					score: data.game.points,
-					activeGameRound: data.waitingGameRound,
-					lastGameRoundResult: null,
-					lastGameRoundPrices: null,
+	const fetchGame = useCallback(
+		(marketPair: PriceMarketPair) => {
+			axiosInstance
+				.get("/game/findOrStartNewGame", { params: { marketPair } })
+				.then((response: FindOrStartNewGameResponse) => {
+					reconnectWS(); // reconnect to get authorized ws connection from the BE accessToken cookie
+					setGameState({
+						score: response.data.game.points,
+						activeGameRound: response.data.waitingGameRound,
+						lastGameRoundResult: null,
+						lastGameRoundPrices: null,
+					});
+					setIsGameStateLoading(false);
 				});
-				setIsGameStateLoading(false);
-			});
-	}, []);
+		},
+		[reconnectWS]
+	);
 
 	const newGameRound = useCallback(
 		(prediction: GameRoundPrediction, marketPair: PriceMarketPair) => {
